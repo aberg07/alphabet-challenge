@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./CSS/styles.css">
+    <title>Alphabet Challenge</title>
+</head>
+<body>
+    <div id="app">
+        <h1 style="text-align: center">Alphabet Challenge</h1>
+        <div id="interface">
+            <div v-show="gameStart">
+                <p id="question">{{ questionRandomLetter }}</p>
+                <button v-if='mode == "easy"' v-for="(i, index) in easyOptions" :key="index" @click="checkAnswer($event)" :disabled="answered">{{ easyOptions[index] }}</button>
+                <button v-if='mode == "hard"' v-for="(i, index) in hardOptions" :key="index" @click="checkAnswer($event)" :disabled="answered">{{ hardOptions[index] }}</button>
+                <div v-show="answered" id="feedback">
+                    <div v-if="correct">
+                        <p>That's right! You have {{ score }} points!</p>
+                        <button @click="getRandomLetters()">Next</button>
+                    </div>
+                    <div v-else>
+                        <p>Oh no!</p>
+                        <p>Right answer: {{ questionRandomLetter.toUpperCase() }}</p>
+                        <p>Your answer: {{ userAnswer }}</p>
+                        <p>You have {{ score }} points!</p>
+                        <button @click="getRandomLetters()">Next</button>
+                    </div>
+                </div>
+            </div>
+            <div v-show="gameEnd">
+                <p>Finished!</p>
+                <p>You got {{ score }}/26 points!</p>
+            </div>
+            <button id="startGameButton" v-show="!gameStart" @click="startGame('easy')">Easy</button>
+            <button id="startGameButton" v-show="!gameStart" @click="startGame('hard')">Hard</button>
+        </div>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    gameStart: false,
+                    gameEnd: false,
+                    letters: '',
+                    alphabet: 'abcd'.split(''),
+                    questionRandomLetter: "",
+                    score: 0,
+                    mode: '',
+                    easyOptions: ['', ''],
+                    hardOptions: ['', '', '', '',],
+                    answered: false,
+                    userAnswer: '',
+                    correct: false
+                }
+            },
+            methods: {
+                startGame(difficulty) {
+                    this.gameStart = true;
+                    this.gameEnd = false;
+                    this.letters = 'abcd'.split('');
+                    this.mode = difficulty;
+                    this.easyOptions = ['', ''];
+                    this.hardOptions = ['', '', '', ''];
+                    this.score = 0;
+                    this.getRandomLetters();
+                },
+                getRandomLetters() {
+                    let options = [];
+                    if (this.mode == 'easy') {
+                        options = this.easyOptions;
+                    }
+                    else if (this.mode == 'hard') {
+                        options = this.hardOptions;
+                    }
+                    console.log(options);
+                    this.answered = false;
+                    if (this.letters.length == 0){
+                        this.gameEnd = true;
+                        this.gameStart = false;
+                    }
+                    else {
+                        const randomIndex = Math.floor(Math.random() * (this.letters.length));
+                        this.questionRandomLetter = this.letters[randomIndex];
+                        const correctButton = Math.floor(Math.random() * options.length);
+                        options[correctButton] = this.questionRandomLetter.toUpperCase();
+                        for (let i = 0; i < options.length; i++) {
+                            if (i == correctButton){
+                                continue;
+                            }
+                            else {
+                                let randomLetter = this.alphabet[Math.floor(Math.random() * (this.alphabet.length))].toUpperCase();
+                                while (options.includes(randomLetter)) {
+                                    randomLetter = this.alphabet[Math.floor(Math.random() * (this.alphabet.length))].toUpperCase();
+                                    console.log(randomLetter);
+                                    console.log(options);
+                                }
+                                options[i] = randomLetter;
+                            }
+                        }
+                    }
+                    console.log(options);
+                },
+                checkAnswer(event) {
+                    this.userAnswer = event.target.innerText;
+                    if (this.userAnswer === this.questionRandomLetter.toUpperCase()) {
+                        this.score++;
+                        console.log('Correct! Current score: ' + this.score);
+                        this.answered = true;
+                        this.correct = true;
+                    }
+                    else {
+                        console.log('Wrong! Current score: ' + this.score);
+                        this.answered = true;
+                        this.correct = false;
+                    }
+                    this.letters.splice(this.letters.indexOf(this.questionRandomLetter), 1);
+                    console.log(this.letters);
+                },
+
+            }
+        })
+
+    app.mount('#app');
+    </script>
+</body>
+</html>

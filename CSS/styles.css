@@ -1,0 +1,11 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Times New Roman', Times, serif;
+}
+
+button {
+    font-family: inherit;
+}
