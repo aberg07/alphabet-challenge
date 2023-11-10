@@ -4,52 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./CSS/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap" rel="stylesheet">
     <title>Alphabet Challenge</title>
 </head>
 <body>
+    <header>
+        <h1><a href="index.html">Alphabet Challenge</a></h1>
+        <hr>
+    </header>
     <div id="app">
-        <h1 style="text-align: center">Alphabet Challenge</h1>
         <div id="interface">
-            <div v-show="gameStart">
+            <div class="input" v-show="!gameEnd && newGame">
+                <button id="startGameButton" @click="startGame('easy')">Easy</button>
+                <button id="startGameButton" @click="startGame('hard')">Hard</button>
+            </div>
+            <div class="screen" v-show="!gameEnd && !newGame">
+                <div id="stats">
+                    <p id="score">Score: {{ score }}/26</p>
+                    <!--<p id="time">Time: {{ time }}</p>-->
+                </div>
                 <p id="question">{{ questionRandomLetter }}</p>
-                <button v-if='mode == "easy"' v-for="(i, index) in easyOptions" :key="index" @click="checkAnswer($event)" :disabled="answered">{{ easyOptions[index] }}</button>
-                <button v-if='mode == "hard"' v-for="(i, index) in hardOptions" :key="index" @click="checkAnswer($event)" :disabled="answered">{{ hardOptions[index] }}</button>
-                <div v-show="answered" id="feedback">
-                    <div v-if="correct">
-                        <p>That's right! You have {{ score }} points!</p>
+                <div class="input">
+                    <button id="option" v-for="(i, index) in options" :key="index" @click="checkAnswer($event)" :disabled="answered">{{ options[index] }}</button>
+                </div>
+                <div v-show="answered" id="response">
+                    <div v-if="correct" class="feedback">
+                        <p>That's right! 1 point!</p>
                         <button @click="getRandomLetters()">Next</button>
                     </div>
-                    <div v-else>
+                    <div v-else class="feedback">
                         <p>Oh no!</p>
                         <p>Right answer: {{ questionRandomLetter.toUpperCase() }}</p>
                         <p>Your answer: {{ userAnswer }}</p>
-                        <p>You have {{ score }} points!</p>
                         <button @click="getRandomLetters()">Next</button>
                     </div>
                 </div>
             </div>
-            <div v-show="gameEnd">
-                <p>Finished!</p>
-                <p>You got {{ score }}/26 points!</p>
+            <div class="screen" v-show="gameEnd">
+                <div class="feedback">
+                    <p>Finished!</p>
+                    <p>You got {{ score }}/26 points!</p>
+                    <p>Try again?</p>
+                </div>
+                <div class="input">
+                    <button id="startGameButton" @click="startGame('easy')">Easy</button>
+                    <button id="startGameButton" @click="startGame('hard')">Hard</button>
+                </div>
             </div>
-            <button id="startGameButton" v-show="!gameStart" @click="startGame('easy')">Easy</button>
-            <button id="startGameButton" v-show="!gameStart" @click="startGame('hard')">Hard</button>
         </div>
     </div>
+
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script>
         const app = Vue.createApp({
             data() {
                 return {
-                    gameStart: false,
+                    newGame: true,
                     gameEnd: false,
                     letters: '',
-                    alphabet: 'abcd'.split(''),
+                    alphabet: 'abcdefghijklmnopqrstuvwxyz'.split(''),
                     questionRandomLetter: "",
                     score: 0,
+                    startTime: null,
+                    time: 0,
                     mode: '',
-                    easyOptions: ['', ''],
-                    hardOptions: ['', '', '', '',],
+                    options: [],
                     answered: false,
                     userAnswer: '',
                     correct: false
@@ -57,66 +78,60 @@
             },
             methods: {
                 startGame(difficulty) {
-                    this.gameStart = true;
+                    this.newGame = false;
                     this.gameEnd = false;
-                    this.letters = 'abcd'.split('');
+                    this.letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
                     this.mode = difficulty;
-                    this.easyOptions = ['', ''];
-                    this.hardOptions = ['', '', '', ''];
                     this.score = 0;
+                    //this.startTime = Date.now();
+                    /*setInterval(() => {
+                    this.time = Math.floor((Date.now() - this.startTime) / 1000); // Calculate elapsed time in seconds
+                    }, 1000);*/
                     this.getRandomLetters();
                 },
                 getRandomLetters() {
-                    let options = [];
                     if (this.mode == 'easy') {
-                        options = this.easyOptions;
+                        this.options = ['', ''];
                     }
                     else if (this.mode == 'hard') {
-                        options = this.hardOptions;
+                        this.options = ['', '', '', ''];
                     }
-                    console.log(options);
                     this.answered = false;
                     if (this.letters.length == 0){
                         this.gameEnd = true;
-                        this.gameStart = false;
+                        this.newGame = true;
                     }
                     else {
                         const randomIndex = Math.floor(Math.random() * (this.letters.length));
                         this.questionRandomLetter = this.letters[randomIndex];
-                        const correctButton = Math.floor(Math.random() * options.length);
-                        options[correctButton] = this.questionRandomLetter.toUpperCase();
-                        for (let i = 0; i < options.length; i++) {
+                        const correctButton = Math.floor(Math.random() * this.options.length);
+                        this.options[correctButton] = this.questionRandomLetter.toUpperCase();
+                        for (let i = 0; i < this.options.length; i++) {
                             if (i == correctButton){
                                 continue;
                             }
                             else {
                                 let randomLetter = this.alphabet[Math.floor(Math.random() * (this.alphabet.length))].toUpperCase();
-                                while (options.includes(randomLetter)) {
+                                while (this.options.includes(randomLetter)) {
                                     randomLetter = this.alphabet[Math.floor(Math.random() * (this.alphabet.length))].toUpperCase();
-                                    console.log(randomLetter);
-                                    console.log(options);
                                 }
-                                options[i] = randomLetter;
+                                this.options[i] = randomLetter;
                             }
                         }
                     }
-                    console.log(options);
                 },
                 checkAnswer(event) {
                     this.userAnswer = event.target.innerText;
                     if (this.userAnswer === this.questionRandomLetter.toUpperCase()) {
                         this.score++;
-                        console.log('Correct! Current score: ' + this.score);
                         this.answered = true;
                         this.correct = true;
                     }
                     else {
-                        console.log('Wrong! Current score: ' + this.score);
                         this.answered = true;
                         this.correct = false;
                     }
                     this.letters.splice(this.letters.indexOf(this.questionRandomLetter), 1);
-                    console.log(this.letters);
                 },
 
             }
