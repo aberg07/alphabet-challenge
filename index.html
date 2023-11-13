@@ -23,7 +23,6 @@
             <div class="screen" v-show="!gameEnd && !newGame">
                 <div id="stats">
                     <p id="score">Points: {{ score }}/26</p>
-                    <!--<p id="time">Time: {{ time }}</p>-->
                 </div>
                 <p id="question">{{ questionRandomLetter }}</p>
                 <div class="input">
@@ -91,10 +90,6 @@
                     this.letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
                     this.mode = difficulty;
                     this.score = 0;
-                    //this.startTime = Date.now();
-                    /*setInterval(() => {
-                    this.time = Math.floor((Date.now() - this.startTime) / 1000); // Calculate elapsed time in seconds
-                    }, 1000);*/
                     this.getRandomLetters();
                 },
                 getRandomLetters() {
