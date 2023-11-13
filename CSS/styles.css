@@ -19,7 +19,11 @@ header {
 h1 {
     text-align: center;
     font-size: 3rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+img {
+    width: 4rem;
 }
 
 a {
@@ -83,8 +87,14 @@ button:active {
     text-align: center;
 }
 
+.inline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .feedback p {
-    font-size: 2rem;
+    font-size: 1.75rem;
     text-align: center;
     margin: 1rem;
 }

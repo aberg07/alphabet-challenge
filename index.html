@@ -22,7 +22,7 @@
             </div>
             <div class="screen" v-show="!gameEnd && !newGame">
                 <div id="stats">
-                    <p id="score">Score: {{ score }}/26</p>
+                    <p id="score">Points: {{ score }}/26</p>
                     <!--<p id="time">Time: {{ time }}</p>-->
                 </div>
                 <p id="question">{{ questionRandomLetter }}</p>
@@ -31,13 +31,21 @@
                 </div>
                 <div v-show="answered" id="response">
                     <div v-if="correct" class="feedback">
-                        <p>That's right! 1 point!</p>
+                        <div class="inline">
+                            <img src="./Images/mark_maru.png" alt="Blue circle">
+                            <p>That's right! 1 point!</p>
+                        </div>
                         <button @click="getRandomLetters()">Next</button>
                     </div>
                     <div v-else class="feedback">
-                        <p>Oh no!</p>
-                        <p>Right answer: {{ questionRandomLetter.toUpperCase() }}</p>
-                        <p>Your answer: {{ userAnswer }}</p>
+                        <div class="inline">
+                            <img src="./Images/mark_batsu.png" alt="Red X">
+                            <p>Oh no!</p>
+                        </div>
+                        <div class="inline">
+                            <img src="./Images/mark_maru.png" alt="Blue circle">
+                            <p>Right answer: {{ questionRandomLetter.toUpperCase() }}</p>
+                        </div>
                         <button @click="getRandomLetters()">Next</button>
                     </div>
                 </div>
