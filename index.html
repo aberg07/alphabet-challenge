@@ -22,7 +22,10 @@
             </div>
             <div class="screen" v-show="!gameEnd && !newGame">
                 <div id="stats">
-                    <p id="score">Points: {{ score }}/26</p>
+                    <!--Show time in minutes and seconds - toLocaleString is used to have seconds displayed
+                    in two digits, for example "09"-->
+                    <span id="time">Time: {{ Math.floor(time / 60)}}:{{ (time%60).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false}) }}</span>
+                    <span id="score">Points: {{ score }}/26</span>
                 </div>
                 <p id="question">{{ questionRandomLetter }}</p>
                 <div class="input">
@@ -52,7 +55,7 @@
             <div class="screen" v-show="gameEnd">
                 <div class="feedback">
                     <p>Finished!</p>
-                    <p>You got {{ score }}/26 points!</p>
+                    <p>You got {{ score }}/26 points in {{ Math.floor(time / 60)}}:{{ (time%60).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false}) }}!</p>
                     <p>Try again?</p>
                 </div>
                 <div class="input">
@@ -76,6 +79,7 @@
                     score: 0,
                     startTime: null,
                     time: 0,
+                    interval: null,
                     mode: '',
                     options: [],
                     answered: false,
@@ -90,6 +94,12 @@
                     this.letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
                     this.mode = difficulty;
                     this.score = 0;
+                    this.time = 0;
+                    this.startTime = Date.now();
+                    clearInterval(this.interval);
+                    this.interval = setInterval(() => {
+                        this.time = Math.floor((Date.now() - this.startTime) / 1000)
+                    });
                     this.getRandomLetters();
                 },
                 getRandomLetters() {
@@ -103,6 +113,7 @@
                     if (this.letters.length == 0){
                         this.gameEnd = true;
                         this.newGame = true;
+                        clearInterval(this.interval);
                     }
                     else {
                         const randomIndex = Math.floor(Math.random() * (this.letters.length));

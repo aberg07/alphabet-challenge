@@ -50,14 +50,18 @@ hr {
     margin: 0 auto;
 }
 
+#stats {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
 #score {
     font-size: 1.5rem;
-    text-align: left;
 }
 
 #time {
     font-size: 1.5rem;
-    text-align: right;
 }
 
 button {
